@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "armfind"
+version = "1.0"
+description = ""
+authors = ["Merculous <24739823+Merculous@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pybinpatch = "^1.0.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
