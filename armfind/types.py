@@ -68,3 +68,16 @@ class BL:
     magic3: int
     j2: int
     imm11: int
+
+
+@dataclass
+class LDR_W:
+    magic1: int
+    magic2: int
+    magic3: int
+    magic4: int
+    magic5: int
+    magic6: int
+    rn: int
+    rt: int
+    imm12: int    

@@ -5,7 +5,8 @@ from .types import (
     MOVS,
     MOV_W,
     MOVW,
-    BL
+    BL,
+    LDR_W
 )
 
 def isLDRLiteral(insnObj: LDRLiteral | None) -> bool:
@@ -98,6 +99,26 @@ def isBL(insnObj: BL | None) -> bool:
         insnObj.magic3 == 0b1 and
         insnObj.j1 == 0b1 and
         insnObj.j2 == 0b1
+    ):
+        return True
+
+    return False
+
+
+def isLDR_W(insnObj: LDR_W | None) -> bool:
+    if insnObj is None:
+        return False
+    
+    if not isinstance(insnObj, LDR_W):
+        raise TypeError
+    
+    if (
+        insnObj.magic1 == 0b11111 and
+        insnObj.magic2 == 0b00 and
+        insnObj.magic3 == 0b0 and
+        insnObj.magic4 == 0b1 and
+        insnObj.magic5 == 0b10 and
+        insnObj.magic6 == 0b1
     ):
         return True
 

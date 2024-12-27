@@ -10,7 +10,8 @@ from .sizes import (
     MOVSBitSizes,
     MOV_WBitSizes,
     MOVWBitSizes,
-    BLBitSizes
+    BLBitSizes,
+    LDR_WBitSizes
 )
 from .types import (
     Insn,
@@ -20,7 +21,8 @@ from .types import (
     MOV_W,
     MOVS,
     MOVW,
-    BL
+    BL,
+    LDR_W
 )
 from .utils import instructionToObject
 from .validators import (
@@ -29,7 +31,8 @@ from .validators import (
     isMOV_W,
     isMOVS,
     isMOVW,
-    isBL
+    isBL,
+    isLDR_W
 )
 
 
@@ -179,10 +182,11 @@ def find_next_MOVS_with_value(data: Buffer, offset: Index, skip: Size, value: Si
 
 
 def find_next_MOVW_with_value(data: Buffer, offset: Index, skip: Size, value: Size) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
-    while i in range(len(data)):
+    while i in range(dataSize):
         movw = searchForInsn(data, i, MOVW, MOVWBitSizes, isMOVW)
 
         if movw is None:
@@ -208,10 +212,11 @@ def find_next_MOVW_with_value(data: Buffer, offset: Index, skip: Size, value: Si
 
 
 def find_next_BL(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
-    while i in range(len(data)):
+    while i in range(dataSize):
         bl = searchForInsn(data, i, BL, BLBitSizes, isBL)
 
         if bl is None:
@@ -222,6 +227,35 @@ def find_next_BL(data: Buffer, offset: Index, skip: Size) -> Insn | None:
 
         if skip <= 0:
             match = (bl, i)
+            break
+
+        skip -= 1
+        i += 4
+
+    return match
+
+
+def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(dataSize):
+        ldr_w = searchForInsn(data, i, LDR_W, LDR_WBitSizes, isLDR_W)
+
+        if ldr_w is None:
+            break
+
+        ldr_w, ldr_wOffset = ldr_w
+        i = ldr_wOffset
+        ldrRefOffset = (ldr_wOffset + ldr_w.imm12 + 4) & ~3
+
+        if ldrRefOffset != value:
+            i += 4
+            continue
+
+        if skip <= 0:
+            match = (ldr_w, ldr_wOffset)
             break
 
         skip -= 1
