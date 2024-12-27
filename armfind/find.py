@@ -250,7 +250,9 @@ def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: S
         i = ldr_wOffset
         ldrRefOffset = (ldr_wOffset + ldr_w.imm12 + 4) & ~3
 
-        if ldrRefOffset != value:
+        window = getBufferAtIndex(data, ldrRefOffset, 4)
+
+        if window != value:
             i += 4
             continue
 
