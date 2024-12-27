@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pybinpatch = "^1.0.5"
+pybinpatch = "^1.0.6"
 
 
 [build-system]
