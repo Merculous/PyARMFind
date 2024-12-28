@@ -235,7 +235,7 @@ def find_next_BL(data: Buffer, offset: Index, skip: Size) -> Insn | None:
     return match
 
 
-def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: Size) -> Insn | None:
+def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: Buffer) -> Insn | None:
     dataSize = len(data)
     match = None
     i = offset
