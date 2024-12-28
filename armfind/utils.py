@@ -13,7 +13,7 @@ def instructionToObject(insn: Buffer, obj: Any, attrSizes: InsnBitSizes, flip: b
         return None
 
     insnBits = 8 * insnSize
-    insn = int.from_bytes(insn, 'little') if flip else int.from_bytes(insn, 'big')
+    insn = int.from_bytes(insn, 'little' if flip else 'big')
     binStr = bin(insn)[2:].zfill(insnBits)
 
     if sum(attrSizes) != insnBits:
