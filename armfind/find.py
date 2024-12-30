@@ -40,17 +40,16 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
     insnSize = sum(insnBitSizes) // 8
     searchSize = len(data) - insnSize + 1
     match = None
-    table = set()
+    table = {}
 
     for i in range(searchSize - offset):
         buffer = getBufferAtIndex(data, offset + i, insnSize)
-        bufferHash = hash(buffer)
 
-        if bufferHash in table:
+        if buffer in table:
             continue
 
-        table.add(bufferHash)
         insnObj = instructionToObject(buffer, insn, insnBitSizes, flip)
+        table[buffer] = insnObj
 
         if not insnValidator(insnObj):
             continue
