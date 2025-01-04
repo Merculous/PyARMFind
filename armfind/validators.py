@@ -6,7 +6,8 @@ from .types import (
     MOV_W,
     MOVW,
     BL,
-    LDR_W
+    LDR_W,
+    PUSH
 )
 
 def isLDRLiteral(insnObj: LDRLiteral | None) -> bool:
@@ -122,4 +123,21 @@ def isLDR_W(insnObj: LDR_W | None) -> bool:
     ):
         return True
 
+    return False
+
+
+def isPUSH(insnObj: PUSH | None) -> bool:
+    if insnObj is None:
+        return False
+    
+    if not isinstance(insnObj, PUSH):
+        raise TypeError
+    
+    if (
+        insnObj.magic1 == 0b1011 and
+        insnObj.magic2 == 0b0 and
+        insnObj.magic3 == 0b10
+    ):
+        return True
+    
     return False

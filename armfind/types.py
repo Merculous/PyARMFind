@@ -81,3 +81,12 @@ class LDR_W:
     rn: int
     rt: int
     imm12: int    
+
+
+@dataclass
+class PUSH:
+    magic1: int
+    magic2: int
+    magic3: int
+    m: int
+    register_list: int

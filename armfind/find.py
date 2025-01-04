@@ -11,7 +11,8 @@ from .sizes import (
     MOV_WBitSizes,
     MOVWBitSizes,
     BLBitSizes,
-    LDR_WBitSizes
+    LDR_WBitSizes,
+    PUSHBitSizes
 )
 from .types import (
     Insn,
@@ -22,7 +23,8 @@ from .types import (
     MOVS,
     MOVW,
     BL,
-    LDR_W
+    LDR_W,
+    PUSH
 )
 from .utils import instructionToObject
 from .validators import (
@@ -32,7 +34,8 @@ from .validators import (
     isMOVS,
     isMOVW,
     isBL,
-    isLDR_W
+    isLDR_W,
+    isPUSH
 )
 
 
@@ -256,10 +259,34 @@ def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: B
             continue
 
         if skip <= 0:
-            match = (ldr_w, ldr_wOffset)
+            match = (ldr_w, i)
             break
 
         skip -= 1
         i += 4
+
+    return match
+
+
+def find_next_push(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(dataSize):
+        push = searchForInsn(data, i, PUSH, PUSHBitSizes, isPUSH)
+
+        if push is None:
+            break
+
+        push, pushOffset = push
+        i = pushOffset
+
+        if skip <= 0:
+            match = (push, i)
+            break
+
+        skip -= 1
+        i += 2
 
     return match
