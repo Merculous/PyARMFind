@@ -16,6 +16,10 @@ from .validators import (isBL, isBLXRegister, isCMP, isLDR_W, isLDRLiteral,
 
 def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Any, flip: bool = True) -> Insn | None:
     insnSize = sum(insnBitSizes) // 8
+
+    if insnSize not in (2, 4):
+        raise Exception(f'Instruction size is not 2 or 4!')
+
     searchSize = len(data) - insnSize + 1
     match = None
     table = {}
