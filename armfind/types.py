@@ -106,3 +106,12 @@ class MOVT:
     imm3: int
     rd: int
     imm8: int
+
+
+@dataclass
+class BLXRegister:
+    magic1: int
+    magic2: int
+    magic3: int
+    rm: int
+    magic4: int

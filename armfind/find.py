@@ -1,45 +1,17 @@
 
 from typing import Any
 
-from binpatch.utils import getBufferAtIndex
 from binpatch.types import Buffer, Index, Size
+from binpatch.utils import getBufferAtIndex
 
-from .sizes import (
-    LDRLiteralBitSizes,
-    CMPBitSizes,
-    MOVSBitSizes,
-    MOV_WBitSizes,
-    MOVWBitSizes,
-    BLBitSizes,
-    LDR_WBitSizes,
-    PUSHBitSizes,
-    MOVTBitSizes
-)
-from .types import (
-    Insn,
-    InsnBitSizes,
-    LDRLiteral,
-    CMP,
-    MOV_W,
-    MOVS,
-    MOVW,
-    BL,
-    LDR_W,
-    PUSH,
-    MOVT
-)
+from .sizes import (BLBitSizes, BLXRegisterBitSizes, CMPBitSizes,
+                    LDR_WBitSizes, LDRLiteralBitSizes, MOV_WBitSizes,
+                    MOVSBitSizes, MOVTBitSizes, MOVWBitSizes, PUSHBitSizes)
+from .types import (BL, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, PUSH, BLXRegister,
+                    Insn, InsnBitSizes, LDRLiteral)
 from .utils import instructionToObject
-from .validators import (
-    isLDRLiteral,
-    isCMP,
-    isMOV_W,
-    isMOVS,
-    isMOVW,
-    isBL,
-    isLDR_W,
-    isPUSH,
-    isMOVT
-)
+from .validators import (isBL, isBLXRegister, isCMP, isLDR_W, isLDRLiteral,
+                         isMOV_W, isMOVS, isMOVT, isMOVW, isPUSH)
 
 
 def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Any, flip: bool = True) -> Insn | None:
@@ -322,4 +294,28 @@ def find_next_MOVT_with_value(data: Buffer, offset: Index, skip: Size, value: Si
         skip -= 1
         i += 4
     
+    return match
+
+
+def find_next_blx_register(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(dataSize):
+        blx = searchForInsn(data, i, BLXRegister, BLXRegisterBitSizes, isBLXRegister)
+
+        if blx is None:
+            break
+
+        blx, blxOffset = blx
+        i = blxOffset
+
+        if skip <= 0:
+            match = (blx, blxOffset)
+            break
+
+        skip -= 1
+        i += 2
+
     return match

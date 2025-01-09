@@ -6,6 +6,7 @@ from binpatch.utils import getBufferAtIndex
 
 from .types import InsnBitSizes
 
+
 def instructionToObject(insn: Buffer, obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> Any | None:
     insnSize = len(insn)
 
