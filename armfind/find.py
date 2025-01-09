@@ -20,8 +20,8 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
     match = None
     table = {}
 
-    for i in range(searchSize - offset):
-        buffer = getBufferAtIndex(data, offset + i, insnSize)
+    for i in range(offset, searchSize):
+        buffer = getBufferAtIndex(data, i, insnSize)
 
         if buffer in table:
             continue
@@ -32,7 +32,7 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
         if not insnValidator(insnObj):
             continue
 
-        match = (insnObj, offset + i)
+        match = (insnObj, i)
         break
 
     return match
