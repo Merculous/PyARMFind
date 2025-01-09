@@ -90,3 +90,19 @@ class PUSH:
     magic3: int
     m: int
     register_list: int
+
+
+@dataclass
+class MOVT:
+    magic1: int
+    i: int
+    magic2: int
+    magic3: int
+    magic4: int
+    magic5: int
+    magic6: int
+    imm4: int
+    magic7: int
+    imm3: int
+    rd: int
+    imm8: int

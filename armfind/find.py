@@ -12,7 +12,8 @@ from .sizes import (
     MOVWBitSizes,
     BLBitSizes,
     LDR_WBitSizes,
-    PUSHBitSizes
+    PUSHBitSizes,
+    MOVTBitSizes
 )
 from .types import (
     Insn,
@@ -24,7 +25,8 @@ from .types import (
     MOVW,
     BL,
     LDR_W,
-    PUSH
+    PUSH,
+    MOVT
 )
 from .utils import instructionToObject
 from .validators import (
@@ -35,7 +37,8 @@ from .validators import (
     isMOVW,
     isBL,
     isLDR_W,
-    isPUSH
+    isPUSH,
+    isMOVT
 )
 
 
@@ -289,4 +292,34 @@ def find_next_push(data: Buffer, offset: Index, skip: Size) -> Insn | None:
         skip -= 1
         i += 2
 
+    return match
+
+
+def find_next_MOVT_with_value(data: Buffer, offset: Index, skip: Size, value: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(dataSize):
+        movt = searchForInsn(data, i, MOVT, MOVTBitSizes, isMOVT)
+
+        if movt is None:
+            break
+
+        movt, movtOffset = movt
+        i = movtOffset
+
+        imm32 = (movt.i << 11) | (movt.imm4 << 12) | (movt.imm3 << 8) | movt.imm8
+
+        if imm32 != value:
+            i += 4
+            continue
+
+        if skip <= 0:
+            match = (movt, i)
+            break
+
+        skip -= 1
+        i += 4
+    
     return match
