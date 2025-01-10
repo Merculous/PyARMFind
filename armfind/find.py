@@ -6,13 +6,14 @@ from binpatch.utils import getBufferAtIndex
 
 from .sizes import (BLBitSizes, BLXRegisterBitSizes, CMPBitSizes,
                     LDR_WBitSizes, LDRLiteralBitSizes, MOV_WBitSizes,
-                    MOVSBitSizes, MOVTBitSizes, MOVWBitSizes, POPBitSizes,
-                    PUSHBitSizes)
+                    MOVRegisterBitSizes, MOVSBitSizes, MOVTBitSizes,
+                    MOVWBitSizes, POPBitSizes, PUSHBitSizes)
 from .types import (BL, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
-                    BLXRegister, Insn, InsnBitSizes, LDRLiteral)
+                    BLXRegister, Insn, InsnBitSizes, LDRLiteral, MOVRegister)
 from .utils import instructionToObject
 from .validators import (isBL, isBLXRegister, isCMP, isLDR_W, isLDRLiteral,
-                         isMOV_W, isMOVS, isMOVT, isMOVW, isPOP, isPUSH)
+                         isMOV_W, isMOVRegister, isMOVS, isMOVT, isMOVW, isPOP,
+                         isPUSH)
 
 
 def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Any, flip: bool = True) -> Insn | None:
@@ -343,6 +344,30 @@ def find_next_pop(data: Buffer, offset: Index, skip: Size) -> Insn | None:
 
         if skip <= 0:
             match = (pop, i)
+            break
+
+        skip -= 1
+        i += 2
+
+    return match
+
+
+def find_next_MOV_register(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(offset, dataSize):
+        mov = searchForInsn(data, i, MOVRegister, MOVRegisterBitSizes, isMOVRegister)
+
+        if mov is None:
+            break
+
+        mov, movOffset = mov
+        i = movOffset
+
+        if skip <= 0:
+            match = (mov, i)
             break
 
         skip -= 1

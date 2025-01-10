@@ -1,6 +1,6 @@
 
 from .types import (BL, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
-                    BLXRegister, LDRLiteral)
+                    BLXRegister, LDRLiteral, MOVRegister)
 
 
 def isLDRLiteral(insnObj: LDRLiteral | None) -> bool:
@@ -186,6 +186,22 @@ def isPOP(insnObj: POP | None) -> bool:
         insnObj.magic1 == 0b1011 and
         insnObj.magic2 == 0b1 and
         insnObj.magic3 == 0b10
+    ):
+        return True
+    
+    return False
+
+
+def isMOVRegister(insnObj: MOVRegister | None) -> bool:
+    if insnObj is None:
+        return False
+    
+    if not isinstance(insnObj, MOVRegister):
+        raise TypeError
+    
+    if (
+        insnObj.magic1 == 0b010001 and
+        insnObj.magic2 == 0b10
     ):
         return True
     

@@ -124,3 +124,12 @@ class POP:
     magic3: int
     p: int
     register_list: int
+
+
+@dataclass
+class MOVRegister:
+    magic1: int
+    magic2: int
+    d: int
+    rm: int
+    rd: int
