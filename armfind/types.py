@@ -115,3 +115,12 @@ class BLXRegister:
     magic3: int
     rm: int
     magic4: int
+
+
+@dataclass
+class POP:
+    magic1: int
+    magic2: int
+    magic3: int
+    p: int
+    register_list: int
