@@ -26,7 +26,7 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
     match = None
     table = {}
 
-    for i in range(searchStart, searchEnd, insnSize):
+    for i in range(searchStart, searchEnd, 2):
         buffer = getBufferAtIndex(data, i, insnSize)
 
         if buffer in table:
