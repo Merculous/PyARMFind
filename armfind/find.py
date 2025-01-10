@@ -21,11 +21,12 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
     if insnSize not in (2, 4):
         raise Exception(f'Instruction size is not 2 or 4!')
 
-    searchSize = len(data) - insnSize + 1
+    searchStart = offset & ~1 if insnSize == 2 else offset & ~3
+    searchEnd = len(data) - insnSize + 1
     match = None
     table = {}
 
-    for i in range(offset, searchSize):
+    for i in range(searchStart, searchEnd, insnSize):
         buffer = getBufferAtIndex(data, i, insnSize)
 
         if buffer in table:
