@@ -48,7 +48,7 @@ def find_next_LDR_Literal(data: Buffer, offset: Index, skip: Size, value: Buffer
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         ldr = searchForInsn(data, i, LDRLiteral, LDRLiteralBitSizes, isLDRLiteral)
 
         if ldr is None:
@@ -83,7 +83,7 @@ def find_next_CMP_with_value(data, offset, skip, value) -> Insn | None:
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         cmp = searchForInsn(data, i, CMP, CMPBitSizes, isCMP)
 
         if cmp is None:
@@ -111,7 +111,7 @@ def find_next_MOV_W_with_value(data: Buffer, offset: Index, skip: Size, value: S
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         mov_w = searchForInsn(data, i, MOV_W, MOV_WBitSizes, isMOV_W)
 
         if mov_w is None:
@@ -140,7 +140,7 @@ def find_next_MOVS_with_value(data: Buffer, offset: Index, skip: Size, value: Si
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         movs = searchForInsn(data, i, MOVS, MOVSBitSizes, isMOVS)
 
         if movs is None:
@@ -168,7 +168,7 @@ def find_next_MOVW_with_value(data: Buffer, offset: Index, skip: Size, value: Si
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         movw = searchForInsn(data, i, MOVW, MOVWBitSizes, isMOVW)
 
         if movw is None:
@@ -198,7 +198,7 @@ def find_next_BL(data: Buffer, offset: Index, skip: Size) -> Insn | None:
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         bl = searchForInsn(data, i, BL, BLBitSizes, isBL)
 
         if bl is None:
@@ -222,7 +222,7 @@ def find_next_LDR_W_with_value(data: Buffer, offset: Index, skip: Size, value: B
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         ldr_w = searchForInsn(data, i, LDR_W, LDR_WBitSizes, isLDR_W)
 
         if ldr_w is None:
@@ -253,7 +253,7 @@ def find_next_push(data: Buffer, offset: Index, skip: Size) -> Insn | None:
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         push = searchForInsn(data, i, PUSH, PUSHBitSizes, isPUSH)
 
         if push is None:
@@ -277,7 +277,7 @@ def find_next_MOVT_with_value(data: Buffer, offset: Index, skip: Size, value: Si
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         movt = searchForInsn(data, i, MOVT, MOVTBitSizes, isMOVT)
 
         if movt is None:
@@ -307,7 +307,7 @@ def find_next_blx_register(data: Buffer, offset: Index, skip: Size) -> Insn | No
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         blx = searchForInsn(data, i, BLXRegister, BLXRegisterBitSizes, isBLXRegister)
 
         if blx is None:
@@ -331,7 +331,7 @@ def find_next_pop(data: Buffer, offset: Index, skip: Size) -> Insn | None:
     match = None
     i = offset
 
-    while i in range(dataSize):
+    while i in range(offset, dataSize):
         pop = searchForInsn(data, i, POP, POPBitSizes, isPOP)
 
         if pop is None:
