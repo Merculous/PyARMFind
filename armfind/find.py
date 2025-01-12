@@ -23,7 +23,7 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
         raise Exception(f'Instruction size is not 2 or 4!')
 
     searchStart = offset & ~(insnSize - 1)
-    searchEnd = len(data)
+    searchEnd = len(data) - insnSize + 1
     match = None
     table = {}
 
