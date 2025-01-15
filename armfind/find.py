@@ -1,5 +1,5 @@
 
-from typing import Any
+from typing import Any, Callable
 
 from binpatch.types import Buffer, Index, Size
 from binpatch.utils import getBufferAtIndex
@@ -16,11 +16,11 @@ from .validators import (isBL, isBLXRegister, isCMP, isLDR_W, isLDRLiteral,
                          isPUSH)
 
 
-def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Any, flip: bool = True) -> Insn | None:
+def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Callable, flip: bool = True) -> Insn | None:
     insnSize = sum(insnBitSizes) // 8
 
     if insnSize not in (2, 4):
-        raise Exception(f'Instruction size is not 2 or 4!')
+        raise ValueError(f'Instruction size is not 2 or 4!')
 
     searchStart = offset & ~(insnSize - 1)
     searchEnd = len(data) - insnSize + 1
@@ -33,8 +33,7 @@ def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitS
         if buffer in table:
             continue
 
-        insnObj = instructionToObject(buffer, insn, insnBitSizes, flip)
-        table[buffer] = insnObj
+        insnObj = table.setdefault(buffer, instructionToObject(buffer, insn, insnBitSizes, flip))
 
         if not insnValidator(insnObj):
             continue
