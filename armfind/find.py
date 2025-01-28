@@ -4,16 +4,16 @@ from typing import Any, Callable
 from binpatch.types import Buffer, Index, Size
 from binpatch.utils import getBufferAtIndex
 
-from .sizes import (BLBitSizes, BLXRegisterBitSizes, CMPBitSizes,
-                    LDR_WBitSizes, LDRLiteralBitSizes, MOV_WBitSizes,
-                    MOVRegisterBitSizes, MOVSBitSizes, MOVTBitSizes,
-                    MOVWBitSizes, POPBitSizes, PUSHBitSizes)
-from .types import (BL, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
+from .sizes import (BLBitSizes, BLXRegisterBitSizes, BNE_WBitSizes,
+                    CMPBitSizes, LDR_WBitSizes, LDRLiteralBitSizes,
+                    MOV_WBitSizes, MOVRegisterBitSizes, MOVSBitSizes,
+                    MOVTBitSizes, MOVWBitSizes, POPBitSizes, PUSHBitSizes)
+from .types import (BL, BNE_W, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
                     BLXRegister, Insn, InsnBitSizes, LDRLiteral, MOVRegister)
 from .utils import instructionToObject
-from .validators import (isBL, isBLXRegister, isCMP, isLDR_W, isLDRLiteral,
-                         isMOV_W, isMOVRegister, isMOVS, isMOVT, isMOVW, isPOP,
-                         isPUSH)
+from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isLDR_W,
+                         isLDRLiteral, isMOV_W, isMOVRegister, isMOVS, isMOVT,
+                         isMOVW, isPOP, isPUSH)
 
 
 def searchForInsn(data: Buffer, offset: Index, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Callable, flip: bool = True) -> Insn | None:
@@ -371,5 +371,29 @@ def find_next_MOV_register(data: Buffer, offset: Index, skip: Size) -> Insn | No
 
         skip -= 1
         i += 2
+
+    return match
+
+
+def find_next_BNE_W(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(offset, dataSize):
+        bnew = searchForInsn(data, i, BNE_W, BNE_WBitSizes, isBNE_W)
+
+        if bnew is None:
+            break
+
+        bnew, bnewOffset = bnew
+        i = bnewOffset
+
+        if skip <= 0:
+            match = (bnew, i)
+            break
+
+        skip -= 1
+        i += 4
 
     return match

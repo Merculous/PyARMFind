@@ -133,3 +133,16 @@ class MOVRegister:
     d: int
     rm: int
     rd: int
+
+
+@dataclass
+class BNE_W:
+    magic1: int
+    s: int
+    cond: int
+    imm6: int
+    magic2: int
+    j1: int
+    magic3: int
+    j2: int
+    imm11: int

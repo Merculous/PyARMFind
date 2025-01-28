@@ -1,5 +1,5 @@
 
-from .types import (BL, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
+from .types import (BL, BNE_W, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
                     BLXRegister, LDRLiteral, MOVRegister)
 
 
@@ -202,6 +202,23 @@ def isMOVRegister(insnObj: MOVRegister | None) -> bool:
     if (
         insnObj.magic1 == 0b010001 and
         insnObj.magic2 == 0b10
+    ):
+        return True
+    
+    return False
+
+
+def isBNE_W(insnObj: BNE_W | None) -> bool:
+    if insnObj is None:
+        return False
+    
+    if not isinstance(insnObj, BNE_W):
+        raise TypeError
+    
+    if (
+        insnObj.magic1 == 0b11110 and
+        insnObj.magic2 == 0b10 and
+        insnObj.magic3 == 0b0
     ):
         return True
     
