@@ -36,3 +36,27 @@ def instructionToObject(insn: Buffer, obj: Any, attrSizes: InsnBitSizes, flip: b
 
     attrs = [int(a, 2) for a in attrs]
     return obj(*attrs)
+
+
+def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> Buffer:
+    insnSize = sum(attrSizes) // 8
+
+    if insnSize not in (2, 4):
+        raise Exception('Invalid instruction size!')
+
+    attrs = vars(obj)
+    insn = ''
+
+    for attr, attrSize in zip(attrs, attrSizes):
+        value = attrs[attr]
+        bStr = bin(value)[2:].zfill(attrSize)
+
+        insn += bStr
+
+    if insnSize == 4:
+        binStr1 = getBufferAtIndex(insn, 0, 16)
+        binStr2 = getBufferAtIndex(insn, 16, 16)
+        insn = ''.join((binStr2, binStr1))
+
+    insn = int(insn, 2).to_bytes(insnSize, 'little' if flip else 'big')
+    return insn
