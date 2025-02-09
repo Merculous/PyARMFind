@@ -2,7 +2,6 @@
 from typing import Any
 
 from binpatch.types import Buffer
-from binpatch.utils import getBufferAtIndex
 
 from .types import InsnBitSizes
 
@@ -15,26 +14,21 @@ def instructionToObject(insn: Buffer, obj: Any, attrSizes: InsnBitSizes, flip: b
 
     insnBits = 8 * insnSize
     insn = int.from_bytes(insn, 'little' if flip else 'big')
-    binStr = bin(insn)[2:].zfill(insnBits)
 
     if sum(attrSizes) != insnBits:
         return
 
     if insnSize == 4:
         # Make things easier for ourselves
-        binStr1 = getBufferAtIndex(binStr, 0, 16)
-        binStr2 = getBufferAtIndex(binStr, 16, 16)
-        binStr = ''.join((binStr2, binStr1))
+        insn = ((insn & 0xFFFF) << 16) | (insn >> 16)
 
-    i = 0
     attrs = []
+    shift = insnBits
 
-    for bitSize in attrSizes:
-        buffer = getBufferAtIndex(binStr, i, bitSize)
-        attrs.append(buffer)
-        i += bitSize
+    for size in attrSizes:
+        shift -= size
+        attrs.append((insn >> shift) & ((1 << size) - 1))
 
-    attrs = [int(a, 2) for a in attrs]
     return obj(*attrs)
 
 
@@ -45,18 +39,14 @@ def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) ->
         raise Exception('Invalid instruction size!')
 
     attrs = vars(obj)
-    insn = ''
+    insn = 0
+    shift = 8 * insnSize
 
-    for attr, attrSize in zip(attrs, attrSizes):
-        value = attrs[attr]
-        bStr = bin(value)[2:].zfill(attrSize)
-
-        insn += bStr
+    for attr, size in zip(attrs.values(), attrSizes):
+        shift -= size
+        insn |= (attr & ((1 << size) - 1)) << shift
 
     if insnSize == 4:
-        binStr1 = getBufferAtIndex(insn, 0, 16)
-        binStr2 = getBufferAtIndex(insn, 16, 16)
-        insn = ''.join((binStr2, binStr1))
+        insn = ((insn & 0xFFFF) << 16) | (insn >> 16)
 
-    insn = int(insn, 2).to_bytes(insnSize, 'little' if flip else 'big')
-    return insn
+    return insn.to_bytes(insnSize, 'little' if flip else 'big')
