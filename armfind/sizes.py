@@ -12,3 +12,4 @@ BLXRegisterBitSizes = (6, 2, 1, 4, 3)
 POPBitSizes = (4, 1, 2, 1, 8)
 MOVRegisterBitSizes = (6, 2, 1, 4, 3)
 BNE_WBitSizes = (5, 1, 4, 6, 2, 1, 1, 1, 11) # T3
+LDRBBitSizes = (3, 1, 1, 5, 3, 3)

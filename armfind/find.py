@@ -5,13 +5,15 @@ from binpatch.types import Buffer, Index, Size
 from binpatch.utils import getBufferAtIndex
 
 from .sizes import (BLBitSizes, BLXRegisterBitSizes, BNE_WBitSizes,
-                    CMPBitSizes, LDR_WBitSizes, LDRLiteralBitSizes,
-                    MOV_WBitSizes, MOVRegisterBitSizes, MOVSBitSizes,
-                    MOVTBitSizes, MOVWBitSizes, POPBitSizes, PUSHBitSizes)
-from .types import (BL, BNE_W, CMP, LDR_W, MOV_W, MOVS, MOVT, MOVW, POP, PUSH,
-                    BLXRegister, Insn, InsnBitSizes, LDRLiteral, MOVRegister)
+                    CMPBitSizes, LDR_WBitSizes, LDRBBitSizes,
+                    LDRLiteralBitSizes, MOV_WBitSizes, MOVRegisterBitSizes,
+                    MOVSBitSizes, MOVTBitSizes, MOVWBitSizes, POPBitSizes,
+                    PUSHBitSizes)
+from .types import (BL, BNE_W, CMP, LDR_W, LDRB, MOV_W, MOVS, MOVT, MOVW, POP,
+                    PUSH, BLXRegister, Insn, InsnBitSizes, LDRLiteral,
+                    MOVRegister)
 from .utils import instructionToObject
-from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isLDR_W,
+from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isLDR_W, isLDRB,
                          isLDRLiteral, isMOV_W, isMOVRegister, isMOVS, isMOVT,
                          isMOVW, isPOP, isPUSH)
 
@@ -395,5 +397,29 @@ def find_next_BNE_W(data: Buffer, offset: Index, skip: Size) -> Insn | None:
 
         skip -= 1
         i += 4
+
+    return match
+
+
+def find_next_LDRB(data: Buffer, offset: Index, skip: Size) -> Insn | None:
+    dataSize = len(data)
+    match = None
+    i = offset
+
+    while i in range(offset, dataSize):
+        ldrb = searchForInsn(data, i, LDRB, LDRBBitSizes, isLDRB)
+
+        if ldrb is None:
+            break
+
+        ldrb, ldrbOffset = ldrb
+        i = ldrbOffset
+
+        if skip <= 0:
+            match = (ldrb, i)
+            break
+
+        skip -= 1
+        i += 2
 
     return match

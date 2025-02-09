@@ -146,3 +146,13 @@ class BNE_W:
     magic3: int
     j2: int
     imm11: int
+
+
+@dataclass
+class LDRB:
+    magic1: int
+    magic2: int
+    magic3: int
+    imm5: int
+    rn: int
+    rt: int
