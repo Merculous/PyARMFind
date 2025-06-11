@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any
 
 Insn = tuple[Any, int]
-InsnBitSizes = tuple[int]
+InsnBitSizes = tuple[int, ...]
 
 @dataclass
 class LDRLiteral:
