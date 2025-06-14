@@ -14,3 +14,4 @@ MOVRegisterBitSizes = (6, 2, 1, 4, 3)
 BNE_WBitSizes = (5, 1, 4, 6, 2, 1, 1, 1, 11) # T3
 LDRBBitSizes = (3, 1, 1, 5, 3, 3)
 NEGSBitSizes = (10, 3, 3)
+ITBitSizes = (8, 4, 4)

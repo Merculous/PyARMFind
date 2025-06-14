@@ -5,17 +5,17 @@ from typing import Any, Callable
 from binpatch.utils import getBufferAtIndex
 
 from .sizes import (BLBitSizes, BLXRegisterBitSizes, BNE_WBitSizes,
-                    CMPBitSizes, LDR_WBitSizes, LDRBBitSizes,
+                    CMPBitSizes, ITBitSizes, LDR_WBitSizes, LDRBBitSizes,
                     LDRLiteralBitSizes, MOV_WBitSizes, MOVRegisterBitSizes,
                     MOVSBitSizes, MOVTBitSizes, MOVWBitSizes, NEGSBitSizes,
                     POPBitSizes, PUSHBitSizes)
-from .types import (BL, BNE_W, CMP, LDR_W, LDRB, MOV_W, MOVS, MOVT, MOVW, NEGS,
-                    POP, PUSH, BLXRegister, Insn, InsnBitSizes, LDRLiteral,
-                    MOVRegister)
+from .types import (BL, BNE_W, CMP, IT, LDR_W, LDRB, MOV_W, MOVS, MOVT, MOVW,
+                    NEGS, POP, PUSH, BLXRegister, Insn, InsnBitSizes,
+                    LDRLiteral, MOVRegister)
 from .utils import instructionToObject
-from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isLDR_W, isLDRB,
-                         isLDRLiteral, isMOV_W, isMOVRegister, isMOVS, isMOVT,
-                         isMOVW, isNEGS, isPOP, isPUSH)
+from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isIT, isLDR_W,
+                         isLDRB, isLDRLiteral, isMOV_W, isMOVRegister, isMOVS,
+                         isMOVT, isMOVW, isNEGS, isPOP, isPUSH)
 
 
 def searchForInsn(data: BytesIO, offset: int, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Callable, flip: bool = True) -> Insn | None:
@@ -441,6 +441,30 @@ def find_next_NEGS(data: BytesIO, offset: int, skip: int) -> Insn | None:
 
         if skip <= 0:
             match = (negs, negsOffset)
+            break
+
+        skip -= 1
+        i += 2
+
+    return match
+
+
+def find_next_IT(data: BytesIO, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data.getbuffer())
+    match = None
+    i = offset
+
+    while i in range(offset, dataSize):
+        it = searchForInsn(data, i, IT, ITBitSizes, isIT)
+
+        if it is None:
+            break
+
+        it, itOffset = it
+        i = itOffset
+
+        if skip <= 0:
+            match = (it, itOffset)
             break
 
         skip -= 1

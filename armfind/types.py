@@ -163,3 +163,10 @@ class NEGS:
     magic1: int
     rn: int
     rd: int
+
+
+@dataclass
+class IT:
+    magic1: int
+    firstcond: int
+    mask: int
