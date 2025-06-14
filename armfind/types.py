@@ -156,3 +156,10 @@ class LDRB:
     imm5: int
     rn: int
     rt: int
+
+
+@dataclass
+class NEGS:
+    magic1: int
+    rn: int
+    rd: int
