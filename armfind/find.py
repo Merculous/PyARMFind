@@ -35,9 +35,9 @@ def searchForInsn(data: BytesIO, offset: int, insn: Any, insnBitSizes: InsnBitSi
         if buffer in table:
             continue
 
-        insnObj = table.setdefault(buffer, instructionToObject(buffer, insn, insnBitSizes, flip))
+        insnObj = table.setdefault(buffer, instructionToObject(buffer, insn, insnBitSizes, insnValidator, flip))
 
-        if not insnValidator(insnObj):
+        if not insnObj:
             continue
 
         match = (insnObj, i)

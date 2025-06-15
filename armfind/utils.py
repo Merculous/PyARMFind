@@ -1,17 +1,17 @@
 
 from io import BytesIO
 from struct import unpack_from
-from typing import Any
+from typing import Any, Callable
 
 from .types import InsnBitSizes
 
 
-def instructionToObject(insn: BytesIO, obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> Any | None:
+def instructionToObject(insn: BytesIO, obj: Any, attrSizes: InsnBitSizes, validator: Callable, flip: bool = True) -> Any | None:
     insnData = insn.getbuffer()
     insnSize = len(insnData)
 
     if insnSize not in (2, 4):
-        return None
+        return
 
     insnBits = 8 * insnSize
     insnInt = int.from_bytes(insnData, 'little' if flip else 'big')
@@ -30,7 +30,12 @@ def instructionToObject(insn: BytesIO, obj: Any, attrSizes: InsnBitSizes, flip: 
         shift -= size
         attrs.append((insnInt >> shift) & ((1 << size) - 1))
 
-    return obj(*attrs)
+    obj = obj(*attrs)
+
+    if not validator(obj):
+        return
+
+    return obj
 
 
 def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> BytesIO:
