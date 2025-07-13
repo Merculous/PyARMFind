@@ -1,5 +1,4 @@
 
-from io import BytesIO
 from typing import Any, Callable
 
 from binpatch.utils import getBufferAtIndex
@@ -18,14 +17,14 @@ from .validators import (isBL, isBLXRegister, isBNE_W, isCMP, isIT, isLDR_W,
                          isMOVT, isMOVW, isNEGS, isPOP, isPUSH)
 
 
-def searchForInsn(data: BytesIO, offset: int, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Callable, flip: bool = True) -> Insn | None:
+def searchForInsn(data: bytes, offset: int, insn: Any, insnBitSizes: InsnBitSizes, insnValidator: Callable, flip: bool = True) -> Insn | None:
     insnSize = sum(insnBitSizes) // 8
 
     if insnSize not in (2, 4):
         raise ValueError(f'Instruction size is not 2 or 4!')
 
     searchStart = offset & ~(insnSize - 1)
-    searchEnd = len(data.getbuffer()) - insnSize + 1
+    searchEnd = len(data) - insnSize + 1
     match = None
     table = {}
 
@@ -46,8 +45,8 @@ def searchForInsn(data: BytesIO, offset: int, insn: Any, insnBitSizes: InsnBitSi
     return match
 
 
-def find_next_LDR_Literal(data: BytesIO, offset: int, skip: int, value: BytesIO) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_LDR_Literal(data: bytes, offset: int, skip: int, value: bytes) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -67,7 +66,7 @@ def find_next_LDR_Literal(data: BytesIO, offset: int, skip: int, value: BytesIO)
 
         window = getBufferAtIndex(data, ldrRefOffset, 4)
 
-        if window.getvalue() != value.getvalue():
+        if window != value:
             i += 2
             continue
 
@@ -81,8 +80,8 @@ def find_next_LDR_Literal(data: BytesIO, offset: int, skip: int, value: BytesIO)
     return match
 
 
-def find_next_CMP_with_value(data: BytesIO, offset: int, skip: int, value: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_CMP_with_value(data: bytes, offset: int, skip: int, value: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -109,8 +108,8 @@ def find_next_CMP_with_value(data: BytesIO, offset: int, skip: int, value: int) 
     return match
 
 
-def find_next_MOV_W_with_value(data: BytesIO, offset: int, skip: int, value: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_MOV_W_with_value(data: bytes, offset: int, skip: int, value: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -138,8 +137,8 @@ def find_next_MOV_W_with_value(data: BytesIO, offset: int, skip: int, value: int
     return match
 
 
-def find_next_MOVS_with_value(data: BytesIO, offset: int, skip: int, value: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_MOVS_with_value(data: bytes, offset: int, skip: int, value: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -166,8 +165,8 @@ def find_next_MOVS_with_value(data: BytesIO, offset: int, skip: int, value: int)
     return match
 
 
-def find_next_MOVW_with_value(data: BytesIO, offset: int, skip: int, value: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_MOVW_with_value(data: bytes, offset: int, skip: int, value: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -196,8 +195,8 @@ def find_next_MOVW_with_value(data: BytesIO, offset: int, skip: int, value: int)
 
 
 
-def find_next_BL(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_BL(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -220,8 +219,8 @@ def find_next_BL(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_LDR_W_with_value(data: BytesIO, offset: int, skip: int, value: BytesIO) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_LDR_W_with_value(data: bytes, offset: int, skip: int, value: bytes) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -237,7 +236,7 @@ def find_next_LDR_W_with_value(data: BytesIO, offset: int, skip: int, value: Byt
 
         window = getBufferAtIndex(data, ldrRefOffset, 4)
 
-        if window.getvalue() != value.getvalue():
+        if window != value:
             i += 4
             continue
 
@@ -251,8 +250,8 @@ def find_next_LDR_W_with_value(data: BytesIO, offset: int, skip: int, value: Byt
     return match
 
 
-def find_next_push(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_push(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -275,8 +274,8 @@ def find_next_push(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_MOVT_with_value(data: BytesIO, offset: int, skip: int, value: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_MOVT_with_value(data: bytes, offset: int, skip: int, value: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -305,8 +304,8 @@ def find_next_MOVT_with_value(data: BytesIO, offset: int, skip: int, value: int)
     return match
 
 
-def find_next_blx_register(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_blx_register(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -329,8 +328,8 @@ def find_next_blx_register(data: BytesIO, offset: int, skip: int) -> Insn | None
     return match
 
 
-def find_next_pop(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_pop(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -353,8 +352,8 @@ def find_next_pop(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_MOV_register(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_MOV_register(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -377,8 +376,8 @@ def find_next_MOV_register(data: BytesIO, offset: int, skip: int) -> Insn | None
     return match
 
 
-def find_next_BNE_W(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_BNE_W(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -401,8 +400,8 @@ def find_next_BNE_W(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_LDRB(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_LDRB(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -425,8 +424,8 @@ def find_next_LDRB(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_NEGS(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_NEGS(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 
@@ -449,8 +448,8 @@ def find_next_NEGS(data: BytesIO, offset: int, skip: int) -> Insn | None:
     return match
 
 
-def find_next_IT(data: BytesIO, offset: int, skip: int) -> Insn | None:
-    dataSize = len(data.getbuffer())
+def find_next_IT(data: bytes, offset: int, skip: int) -> Insn | None:
+    dataSize = len(data)
     match = None
     i = offset
 

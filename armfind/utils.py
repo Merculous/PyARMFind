@@ -1,20 +1,18 @@
 
-from io import BytesIO
 from struct import unpack_from
 from typing import Any, Callable
 
 from .types import InsnBitSizes
 
 
-def instructionToObject(insn: BytesIO, obj: Any, attrSizes: InsnBitSizes, validator: Callable, flip: bool = True) -> Any | None:
-    insnData = insn.getbuffer()
-    insnSize = len(insnData)
+def instructionToObject(insn: bytes, obj: Any, attrSizes: InsnBitSizes, validator: Callable, flip: bool = True) -> Any | None:
+    insnSize = len(insn)
 
     if insnSize not in (2, 4):
         return
 
     insnBits = 8 * insnSize
-    insnInt = int.from_bytes(insnData, 'little' if flip else 'big')
+    insnInt = int.from_bytes(insn, 'little' if flip else 'big')
 
     if sum(attrSizes) != insnBits:
         return
@@ -38,7 +36,7 @@ def instructionToObject(insn: BytesIO, obj: Any, attrSizes: InsnBitSizes, valida
     return obj
 
 
-def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> BytesIO:
+def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> bytes:
     insnSize = sum(attrSizes) // 8
 
     if insnSize not in (2, 4):
@@ -55,19 +53,17 @@ def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) ->
     if insnSize == 4:
         insn = ((insn & 0xFFFF) << 16) | (insn >> 16)
 
-    return BytesIO(insn.to_bytes(insnSize, 'little' if flip else 'big'))
+    return insn.to_bytes(insnSize, 'little' if flip else 'big')
 
 
 # Taken from iBoot32Patcher and converted via ChatGPT
-def resolve_bl32(bl: BytesIO) -> int:
-    buffer = bl.getbuffer()
-
+def resolve_bl32(bl: bytes) -> int:
     # Ensure we have at least 4 bytes
-    if len(buffer) != 4:
+    if len(bl) != 4:
         raise ValueError("Input must be at least 4 bytes long")
 
     # Unpack two 16-bit little-endian values
-    bits_val, exts_val = unpack_from('<HH', buffer)
+    bits_val, exts_val = unpack_from('<HH', bl)
 
     # Decode first 16 bits
     bits_immediate = bits_val & 0x03FF       # 10 bits
