@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pybinpatch = "^1.1.1"
+pybinpatch = {git = "https://github.com/Merculous/PyBinPatch.git"}
 
 
 [build-system]

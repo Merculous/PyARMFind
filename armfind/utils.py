@@ -2,6 +2,8 @@
 from struct import unpack_from
 from typing import Any, Callable
 
+from binpatch.utils import getBufferAtIndex
+
 from .types import InsnBitSizes
 
 
@@ -12,28 +14,33 @@ def instructionToObject(insn: bytes, obj: Any, attrSizes: InsnBitSizes, validato
         return
 
     insnBits = 8 * insnSize
-    insnInt = int.from_bytes(insn, 'little' if flip else 'big')
+    insn = int.from_bytes(insn, 'little' if flip else 'big')
+    binStr = bin(insn)[2:].zfill(insnBits)
 
     if sum(attrSizes) != insnBits:
         return
 
     if insnSize == 4:
         # Make things easier for ourselves
-        insnInt = ((insnInt & 0xFFFF) << 16) | (insnInt >> 16)
+        binStr1 = getBufferAtIndex(binStr, 0, 16)
+        binStr2 = getBufferAtIndex(binStr, 16, 16)
+        binStr = ''.join((binStr2, binStr1))
 
+    i = 0
     attrs = []
-    shift = insnBits
 
-    for size in attrSizes:
-        shift -= size
-        attrs.append((insnInt >> shift) & ((1 << size) - 1))
+    for bitSize in attrSizes:
+        buffer = getBufferAtIndex(binStr, i, bitSize)
+        attrs.append(buffer)
+        i += bitSize
 
-    obj = obj(*attrs)
+    attrs = [int(a, 2) for a in attrs]
+    newObj = obj(*attrs)
 
-    if not validator(obj):
+    if not validator(newObj):
         return
 
-    return obj
+    return newObj
 
 
 def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) -> bytes:
@@ -43,17 +50,21 @@ def objectToInstruction(obj: Any, attrSizes: InsnBitSizes, flip: bool = True) ->
         raise Exception('Invalid instruction size!')
 
     attrs = vars(obj)
-    insn = 0
-    shift = 8 * insnSize
+    insn = ''
 
-    for attr, size in zip(attrs.values(), attrSizes):
-        shift -= size
-        insn |= (attr & ((1 << size) - 1)) << shift
+    for attr, attrSize in zip(attrs, attrSizes):
+        value = attrs[attr]
+        bStr = bin(value)[2:].zfill(attrSize)
+
+        insn += bStr
 
     if insnSize == 4:
-        insn = ((insn & 0xFFFF) << 16) | (insn >> 16)
+        binStr1 = getBufferAtIndex(insn, 0, 16)
+        binStr2 = getBufferAtIndex(insn, 16, 16)
+        insn = ''.join((binStr2, binStr1))
 
-    return insn.to_bytes(insnSize, 'little' if flip else 'big')
+    insn = int(insn, 2).to_bytes(insnSize, 'little' if flip else 'big')
+    return insn
 
 
 # Taken from iBoot32Patcher and converted via ChatGPT
