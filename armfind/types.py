@@ -5,6 +5,7 @@ from typing import Any
 Insn = tuple[Any, int]
 InsnBitSizes = tuple[int, ...]
 
+
 @dataclass
 class LDRLiteral:
     magic: int
@@ -80,7 +81,7 @@ class LDR_W:
     magic6: int
     rn: int
     rt: int
-    imm12: int    
+    imm12: int
 
 
 @dataclass
@@ -170,3 +171,16 @@ class IT:
     magic1: int
     firstcond: int
     mask: int
+
+
+@dataclass
+class LDRB_W:
+    magic1: int
+    magic2: int
+    magic3: int
+    magic4: int
+    magic5: int
+    magic6: int
+    rn: int
+    rt: int
+    imm12: int

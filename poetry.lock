@@ -14,7 +14,7 @@ develop = false
 type = "git"
 url = "https://github.com/Merculous/PyBinPatch.git"
 reference = "HEAD"
-resolved_reference = "1347d832afc2bea170cdf5dff251dfabf5015f53"
+resolved_reference = "badcd62ceeb42889ea7162e1d2f8223a333d8b53"
 
 [metadata]
 lock-version = "2.1"
