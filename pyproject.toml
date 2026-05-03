@@ -1,15 +1,17 @@
-[tool.poetry]
+[project]
 name = "armfind"
 version = "1.0"
 description = ""
-authors = ["Merculous <24739823+Merculous@users.noreply.github.com>"]
+authors = [
+    {name = "Merculous",email = "24739823+Merculous@users.noreply.github.com"}
+]
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-pybinpatch = {git = "https://github.com/Merculous/PyBinPatch.git"}
+requires-python = ">=3.12"
+dependencies = [
+    "binpatch @ git+https://github.com/merculous/pybinpatch.git"
+]
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
